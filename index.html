@@ -21,7 +21,7 @@
         $(document).ready(function() {
           var HIGHLIGHT_TIME = 2000;
             var ticker = location.hash.substr(1);
-            var socket = io.connect('http://localhost:5000');
+            var socket = io.connect('http://adisraspi.ddns.me:7777');
               socket.emit('ticker', ticker);
               socket.on(ticker, function(response) {
                 var responseParts = response.split(':');
