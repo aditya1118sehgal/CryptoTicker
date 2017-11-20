@@ -1,0 +1,19 @@
+{
+  "name": "cryptoticker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "nodemon": "^1.12.1",
+    "socket.io": "^2.0.4"
+  }
+}
