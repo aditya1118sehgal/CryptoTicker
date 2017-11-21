@@ -20,8 +20,43 @@
         'use strict';
         $(document).ready(function() {
           var HIGHLIGHT_TIME = 2000;
+          var URI_SOCKET = 'http://localhost:5000';
+
+          console.log('in index');
+
+          var animatePrice = function(text) {
+            var data = $('<pre>' + text + '</pre><hr />');
+            $('#quotes').append(data);
+            $('html, body').animate({ scrollTop: $(document).height() }, 100);
+            $(data).show('slide', { direction: 'up' }, 300);
+            $(data).effect("highlight", {color: 'green'}, HIGHLIGHT_TIME);
+
+          }
+          var tickerETH = function() {
+            var socket = io.connect(URI_SOCKET);
             var ticker = location.hash.substr(1);
-            var socket = io.connect('http://adisraspi.ddns.me:7777');
+            socket.emit('tickerETH', ticker);
+            socket.on(ticker, function(response) {
+              console.log(response);
+              animatePrice('ETH = ' + response);
+            });
+          };
+
+          var tickerLTC = function() {
+            var socket = io.connect(URI_SOCKET);
+            var ticker = location.hash.substr(1);
+            socket.emit('tickerLTC', ticker);
+            socket.on(ticker, function(response) {
+              console.log(response);
+              animatePrice('LTC = ' + response);
+            });
+          };
+
+          tickerETH();
+          tickerLTC();
+
+          var ticker = location.hash.substr(1);
+          var socket = io.connect('http://localhost:5000');
               socket.emit('ticker', ticker);
               socket.on(ticker, function(response) {
                 var responseParts = response.split(':');
@@ -44,7 +79,6 @@
                       $(data).show('slide', { direction: 'down' }, 300);
                       $(data).effect("highlight", {color: 'yellow'}, HIGHLIGHT_TIME);
                     }
-
                   }
               });
             $(window).on('hashchange', function() {

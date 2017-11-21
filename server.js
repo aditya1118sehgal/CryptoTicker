@@ -1,14 +1,24 @@
 'use strict';
 
 
-
 var express = require('express');
 var http = require('http');
 var https = require('https');
 var io = require('socket.io');
 var cors = require('cors');
+var colors = require('colors'); //logging with colors
 
 var endpoints = require('./common/endpoints');
+var config = require('./common/config');
+var helpers = require('./common/helpers');
+
+var PORT = config.PORT;
+
+var logBlue = helpers.logBlue;
+var logGreen = helpers.logGreen;
+var logMagenta = helpers.logMagenta;
+var logYellow = helpers.logYellow;
+var logRed = helpers.logRed;
 
 var TICK_FREQUENCY = 100;
 var PRETTIFY_JSON = true;
@@ -22,20 +32,32 @@ var LTC_PRICE;
 
 
 
-var getPriceETH = function() {
-  console.log('in getPriceETH');
+var tickETH = function(socket, ticker) {
+  var msg = 'in getPriceETH';
+  var price;
   var url = endpoints.URI_ETH;
-  var price = getPrice(url);
-  console.log('got eth price = ['+price+']');
-  return price;
+  getPrice(url, function(price) {
+    logMagenta('got eth price = ['+price+'], emitting');
+    socket.emit(ticker, price);
+  });
+};
+
+var tickLTC = function(socket, ticker) {
+  var msg = 'in getPriceETH';
+  var price;
+  var url = endpoints.URI_LTC;
+  getPrice(url, function(price) {
+    logYellow('got ltc price = ['+price+'], emitting');
+    socket.emit(ticker, price);
+  });
 };
 
 /**
   * performs a GET request and returns the data
   * @param url
 */
-var getPrice = function(url) {
-  console.log('in getPrice');
+var getPrice = function(url, callback) {
+  var msg = '';
   var price = undefined;
   https.get(url, function(response) {
       response.setEncoding('utf8');
@@ -50,43 +72,24 @@ var getPrice = function(url) {
               try {
                   dataObj = JSON.parse(data);
                   price = dataObj[0]['price_usd'];
-                  console.log('got price = ['+price+']');
+                  callback(price);
               } catch(e) {
-                  return false;
+                  callback(price);
+                  logRed(e);
               }
           }
 
       });
   });
-  return price;
 }
 
 function getPrices(socket, ticker) {
   console.log('in getPrices');
-  ETH_PRICE = getPriceETH();
-  /*
-    https.get('https://api.coinmarketcap.com/v1/ticker/ethereum/'
-    , function(response) {
-        response.setEncoding('utf8');
-        var data = '';
-
-        response.on('data', function(chunk) {
-            data += chunk;
-        });
-        response.on('end', function() {
-            if(data.length > 0) {
-                var dataObj;
-                try {
-                    dataObj = JSON.parse(data);
-                    ETH_PRICE = dataObj[0]['price_usd']
-                } catch(e) {
-                    return false;
-                }
-            }
-
-        });
-    });*/
-    https.get('https://api.coinmarketcap.com/v1/ticker/litecoin/'
+  getPriceETH(function(price){
+    var emitETH = ETH_AMOUNT*price;
+    logGreen('eth price = '+emitETH);
+  });
+    /*https.get('https://api.coinmarketcap.com/v1/ticker/litecoin/'
     , function(response) {
         response.setEncoding('utf8');
         var data = '';
@@ -170,8 +173,34 @@ function getPrices(socket, ticker) {
               socket.emit(ticker, allStr);
             }
         });
+    });*/
+}
+
+function tickETH(socket, ticker) {
+  getPriceETH(socket, ticker);
+    logBlue('ticking');
+    var timer = setInterval(function() {
+        getPriceETH(socket, ticker);
+    }, TICK_FREQUENCY);
+
+    socket.on('disconnect', function () {
+        clearInterval(timer);
     });
 }
+
+function tickLTC(socket, ticker) {
+
+  getPriceLTC(socket, ticker);
+    logYellow('ticking');
+    var timer = setInterval(function() {
+        getPriceLTC(socket, ticker);
+    }, TICK_FREQUENCY);
+
+    socket.on('disconnect', function () {
+        clearInterval(timer);
+    });
+}
+
 
 function trackTicker(socket, ticker) {
     getPrices(socket, ticker);
@@ -193,14 +222,35 @@ var io = io.listen(server);
 io.set('origins', '*:*');
 
 app.get('/', function(req, res) {
-    res.sendfile(__dirname + '/index.html');
+  var msg = 'sendig index';
+  logBlue(msg);
+  res.sendfile(__dirname + '/index.html');
 });
 
 io.sockets.on('connection', function(socket) {
-    socket.on('ticker', function(ticker) {
-      console.log('socket  on');
-        trackTicker(socket, ticker);
+    /*socket.on('ticker', function(ticker) {
+      logBlue('socket  on')
+      trackTicker(socket, ticker);
+    });*/
+    // eth socket
+    socket.on('tickerETH', function(ticker) {
+      logMagenta('ETH socket on');
+      tickETH(socket, ticker);
+    });
+    //ltc socket
+    socket.on('tickerLTC', function(ticker) {
+      logYellow('LTC socket on');
+      tickLTC(socket, ticker);
     });
 });
 
-server.listen(process.env.PORT || 5000);
+server.listen(PORT, function() {
+  var msg = 'server listening on port = ['+PORT+']';
+  console.log('************************************')
+  logGreen(msg);
+});
+
+//color codes:
+// server = green
+// sockets = purple
+//
