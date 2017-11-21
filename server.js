@@ -1,13 +1,17 @@
 'use strict';
 
-var TICK_FREQUENCY = 100;
-var PRETTIFY_JSON = true;
+
 
 var express = require('express');
 var http = require('http');
 var https = require('https');
 var io = require('socket.io');
 var cors = require('cors');
+
+var endpoints = require('./common/endpoints');
+
+var TICK_FREQUENCY = 100;
+var PRETTIFY_JSON = true;
 var ETH_AMOUNT = 1;
 var LTC_AMOUNT = 1;
 var currETH = -1;
@@ -16,7 +20,51 @@ var currALL = -1;
 var ETH_PRICE;
 var LTC_PRICE;
 
+
+
+var getPriceETH = function() {
+  console.log('in getPriceETH');
+  var url = endpoints.URI_ETH;
+  var price = getPrice(url);
+  console.log('got eth price = ['+price+']');
+  return price;
+};
+
+/**
+  * performs a GET request and returns the data
+  * @param url
+*/
+var getPrice = function(url) {
+  console.log('in getPrice');
+  var price = undefined;
+  https.get(url, function(response) {
+      response.setEncoding('utf8');
+      var data = '';
+
+      response.on('data', function(chunk) {
+          data += chunk;
+      });
+      response.on('end', function() {
+          if(data.length > 0) {
+              var dataObj;
+              try {
+                  dataObj = JSON.parse(data);
+                  price = dataObj[0]['price_usd'];
+                  console.log('got price = ['+price+']');
+              } catch(e) {
+                  return false;
+              }
+          }
+
+      });
+  });
+  return price;
+}
+
 function getPrices(socket, ticker) {
+  console.log('in getPrices');
+  ETH_PRICE = getPriceETH();
+  /*
     https.get('https://api.coinmarketcap.com/v1/ticker/ethereum/'
     , function(response) {
         response.setEncoding('utf8');
@@ -37,7 +85,7 @@ function getPrices(socket, ticker) {
             }
 
         });
-    });
+    });*/
     https.get('https://api.coinmarketcap.com/v1/ticker/litecoin/'
     , function(response) {
         response.setEncoding('utf8');
