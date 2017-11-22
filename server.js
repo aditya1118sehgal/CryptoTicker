@@ -137,7 +137,8 @@ io.set('origins', '*:*');
 app.get('/', function(req, res) {
   var msg = 'sendig index';
   logBlue(msg);
-  res.sendfile(__dirname + '/index.html');
+  var PATH = '/web/index.html'
+  res.sendfile(__dirname + PATH);
 });
 
 io.sockets.on('connection', function(socket) {
