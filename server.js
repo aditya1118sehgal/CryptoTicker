@@ -23,13 +23,6 @@ var logRed = helpers.logRed;
 
 var TICK_FREQUENCY = 100;
 var PRETTIFY_JSON = true;
-var ETH_AMOUNT = 1;
-var LTC_AMOUNT = 1;
-var currETH = -1;
-var currLTC = -1;
-var currALL = -1;
-var ETH_PRICE;
-var LTC_PRICE;
 
 /**
  * gets ETH price
@@ -40,7 +33,7 @@ var getPriceETH = function(socket, ticker) {
   var price;
   var url = endpoints.URI_ETH;
   getPrice(url, function(price) {
-    logMagenta('got eth price = ['+price+'], emitting');
+    //logMagenta('got eth price = ['+price+'], emitting');
     socket.emit(ticker, price);
   });
 };
@@ -54,8 +47,11 @@ var getPriceLTC = function(socket, ticker) {
   var price;
   var url = endpoints.URI_LTC;
   getPrice(url, function(price) {
-    logYellow('got ltc price = ['+price+'], emitting');
-    socket.emit(ticker, price);
+    //logYellow('got ltc price = ['+price+'], emitting');
+    if(price != null) {
+      socket.emit(ticker, price);
+    }
+
   });
 };
 
@@ -82,11 +78,15 @@ var getPrice = function(url, callback) {
                   callback(price);
               }
               catch(e) {
-                  callback(price);
                   logRed(e);
+                  callback(null);
               }
           }
 
+      });
+      response.on('error', function(error){
+          logRed("Error: " + error);
+          callback(null);
       });
   });
 }
@@ -97,7 +97,7 @@ var getPrice = function(url, callback) {
  * @param ticker
  */
 var tickETH = function(socket, ticker) {
-    logMagenta('ticking');
+    logMagenta('ETH ticking...');
 
     getPriceETH(socket, ticker);
     var timer = setInterval(function() {
@@ -115,7 +115,7 @@ var tickETH = function(socket, ticker) {
  * @param ticker
  */
 var tickLTC = function(socket, ticker) {
-    logYellow('ticking...');
+    logYellow('LTC ticking...');
 
     getPriceLTC(socket, ticker);
 
@@ -147,12 +147,12 @@ io.sockets.on('connection', function(socket) {
     // turn on:
     // 1. eth socket
     socket.on('tickerETH', function(ticker) {
-      logMagenta('ETH socket on');
+      //logMagenta('ETH socket on');
       tickETH(socket, ticker);
     });
     //2. ltc socket
     socket.on('tickerLTC', function(ticker) {
-      logYellow('LTC socket on');
+      //logYellow('LTC socket on');
       tickLTC(socket, ticker);
     });
 });
