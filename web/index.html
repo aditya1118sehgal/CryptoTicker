@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<body>
+  <div ng-app="myApp" ng-controller="myCtrl">
+
+    LTC: <input type="number" ng-model="LTC"><br>
+    ETH: <input type="number" ng-model="ETH"><br>
+    <br>
+  LTC = {{ LTC }}<br>
+  ETH = {{ ETH }}<br>
+  </div>
+
+  <script>
+
+  var app = angular.module("myApp", []);
+  app.controller("myCtrl", function($scope) {
+      $scope.LTC = 1;
+      $scope.ETH = 1;
+/*
+      socket.on('tickerETH', function (data) {
+        //console.log(data);
+  $scope.ETH = data;
+});
+
+socket.on('tickerLTC', function (message) {
+  //console.log(data);
+$scope.LTC = data;
+});*/
+  });
+/*
+  app.factory('socket', function ($rootScope) {
+    console.log('in app.factory')
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});*/
+
+  </script>
+</body>
+</html>

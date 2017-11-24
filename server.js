@@ -6,6 +6,7 @@ var http = require('http');
 var https = require('https');
 var io = require('socket.io');
 var cors = require('cors');
+var logger = require('morgan');
 var colors = require('colors'); //logging with colors
 
 var endpoints = require('./common/endpoints');
@@ -129,6 +130,7 @@ var tickLTC = function(socket, ticker) {
 
 var app = express();
 app.use(cors());
+app.use(logger('dev'));
 var server = http.createServer(app);
 
 var io = io.listen(server);
