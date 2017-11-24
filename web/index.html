@@ -19,8 +19,8 @@
       </div>
         <br>
       {{ LTC }} LTC @ $ {{ LTC_PRICE }} / LTC = $ {{ LTC_VAL }}<br>
-      {{ ETH }} ETH @ $ {{ EHT_PRICE }} / ETH = $ {{ ETH_VAL }}<br>
-      WORTH - INVESTED = $ {{ LTC_VAL + ETH_VAL }} - {{ INV }} / {{ LTC_VAL + ETH_VAL - INV}}
+      {{ ETH }} ETH @ $ {{ ETH_PRICE }} / ETH = $ {{ ETH_VAL }}<br>
+      WORTH - INVESTED = $ {{ LTC_VAL + ETH_VAL }} - {{ INV }} = {{ LTC_VAL + ETH_VAL - INV}}
   </div>
 
   <script>
@@ -31,9 +31,9 @@
       $scope.LTC_PRICE = 0;
       $scope.ETH_PRICE = 0;
       $scope.showDiv = true;
-      $scope.LTC = 0;
-      $scope.ETH = 0;
-      $scope.INV = 0;
+      $scope.LTC = 10.6;
+      $scope.ETH = 4.8;
+      $scope.INV = 2430;
       $scope.LTC_VAL = 0;
       $scope.ETH_VAL = 0;
 
