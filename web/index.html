@@ -20,7 +20,7 @@
         <br>
       {{ LTC }} LTC @ $ {{ LTC_PRICE }} / LTC = $ {{ LTC_VAL }}<br>
       {{ ETH }} ETH @ $ {{ ETH_PRICE }} / ETH = $ {{ ETH_VAL }}<br>
-      WORTH - INVESTED = $ {{ LTC_VAL + ETH_VAL }} - {{ INV }} = {{ LTC_VAL + ETH_VAL - INV}}
+      WORTH - INVESTED = $ {{ LTC_VAL + ETH_VAL }} - $ {{ INV }} = $ {{ LTC_VAL + ETH_VAL - INV}}
   </div>
 
   <script>
@@ -31,9 +31,9 @@
       $scope.LTC_PRICE = 0;
       $scope.ETH_PRICE = 0;
       $scope.showDiv = true;
-      $scope.LTC = 10.6;
-      $scope.ETH = 4.8;
-      $scope.INV = 2430;
+      $scope.LTC = 14.6;
+      $scope.ETH = 4.2;
+      $scope.INV = 2500;
       $scope.LTC_VAL = 0;
       $scope.ETH_VAL = 0;
 
@@ -60,8 +60,12 @@
         var ticker = location.hash.substr(1);
         socket.emit('tickerLTC', ticker);
         socket.on(ticker, function(response) {
+          //console.log('ltc');
           if(!isNaN(response)) {
             $scope.LTC_PRICE = response;
+            if(response != $scope.LTC_PRICE) {
+              console.log('updating price');
+            }
             $scope.LTC_VAL = $scope.LTC_PRICE * $scope.LTC;
           }
           else {
