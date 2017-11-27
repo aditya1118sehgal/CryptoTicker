@@ -21,7 +21,7 @@ var logMagenta = helpers.logMagenta;
 var logYellow = helpers.logYellow;
 var logRed = helpers.logRed;
 
-var TICK_FREQUENCY = 100;
+var TICK_FREQUENCY = 10000;
 var PRETTIFY_JSON = true;
 
 /**
