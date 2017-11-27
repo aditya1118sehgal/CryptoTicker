@@ -27,27 +27,33 @@
 
   var app = angular.module("myApp", []);
   app.controller("myCtrl", function($scope) {
+      var URI_PROD = 'http://adisraspi.ddns.me:7777';
+      var URI_DEV = 'http://localhost:5000';
+      //CONFIG
+
       //DEV
-      //$scope.LTC = 19.5;
-      //$scope.ETH = 4.2;
-      //$scope.INV = 3000;
+      $scope.LTC = 19.5;
+      $scope.ETH = 4.2;
+      $scope.INV = 3000;
+      var URI_SOCKET = URI_DEV;
+      //end DEV
+
       //PROD
-      $scope.LTC = 0;
-      $scope.ETH = 0;
-      $scope.INV = 0;
-      //
+      //$scope.LTC = 0;
+      //$scope.ETH = 0;
+      //$scope.INV = 0;
+      //var URI_SOCKET = URI_PROD;
+      //end PROD
+
       $scope.LTC_PRICE = 0;
       $scope.ETH_PRICE = 0;
       $scope.showDiv = true;
-
-
       $scope.LTC_VAL = 0;
       $scope.ETH_VAL = 0;
 
       var HIGHLIGHT_TIME = 2000;
-      var URI_PROD = 'http://adisraspi.ddns.me:7777';
-      var URI_DEV = 'http://localhost:5000';
-      var URI_SOCKET = URI_PROD;
+
+
 
       var tickerETH = function() {
         var socket = io.connect(URI_SOCKET);
