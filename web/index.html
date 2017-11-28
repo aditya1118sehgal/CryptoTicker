@@ -18,10 +18,13 @@
 <body>
   <div ng-app="myApp" ng-controller="myCtrl">
     <div>
-      <span ng-class="{
-        'color: red': ETH_COLOR === 'red',
-        'color: green': ETH_COLOR === 'green'}">$ {{ETH_PRICE}} / ETH</span>
-    </div>
+      <div ng-show="showETH">
+        <span ng-class="{
+          'color: red': ETH_COLOR === 'red',
+          'color: green': ETH_COLOR === 'green'}">$ {{ETH_PRICE}} / ETH</span>
+      </div>
+      <button ng-click="showETH = !showETH">ETH</button>
+  </div>
     <div>
       <span ng-class="{
         'color: red': LTC_COLOR === 'red',
@@ -79,11 +82,13 @@
 
       $scope.LTC_PRICE = 90;
       $scope.ETH_PRICE = 470;
-      $scope.showDiv = false;
       $scope.LTC_VAL = 0;
       $scope.ETH_VAL = 0;
       $scope.ETH_COLOR = 'white';
       $scope.LTC_COLOR = 'white';
+
+      $scope.showDiv = false;
+      $scope.showETH = true;
 
       var REFRESH = 500;
 
