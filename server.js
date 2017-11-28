@@ -84,10 +84,9 @@ var getPrice = function(url, callback) {
           }
 
       });
-      response.on('error', function(error){
-          logRed("Error: " + error);
-          callback(null);
-      });
+  }).on('error', function(error){
+      logRed("Error: " + error);
+      callback(null);
   });
 }
 
