@@ -43,7 +43,10 @@
       </div>
     </div>
     <div>
-      WORTH - INVESTED = $ <span ng-class="{'color: green': true}">{{ LTC_VAL + ETH_VAL }} </span> - $ <span ng-class="{'color: red':true}">{{ INV }} </span>= $ <span ng-class="{'color: red':LTC_VAL + ETH_VAL < INV, 'color: green': LTC_VAL + ETH_VAL > INV}"> {{ LTC_VAL + ETH_VAL - INV}}
+      WORTH = $ <span ng-class="{'color: green':true}">{{LTC_VAL + ETH_VAL}}</span><br>
+      INV = $ <span ng-class="{'color: red':true}"> {{ INV }} </span><br>
+      FEE = $ <span ng-class="{'color: red':true}"> {{ FEE }} </span><br>
+      PROFIT = $ <span ng-class="{'color: red':LTC_VAL + ETH_VAL < INV, 'color: green': LTC_VAL + ETH_VAL > INV}"> {{ LTC_VAL + ETH_VAL - INV - FEE}}
     </div>
     <div>
       <button ng-click="showDiv = !showDiv">input </button>
@@ -64,8 +67,9 @@
       //CONFIG
 
       //DEV
-      $scope.LTC = 19.5;
-      $scope.ETH = 4.2;
+      $scope.LTC = 22.33;
+      $scope.ETH = 4.3;
+      $scope.FEE = 300;
       $scope.INV = 3000;
       var URI_SOCKET = URI_DEV;
       //end DEV
