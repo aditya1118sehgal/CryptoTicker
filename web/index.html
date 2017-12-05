@@ -14,9 +14,20 @@
 .red{
   color:red;
 }
+.blue{
+  color:blue;
+}
+.yellow{
+  color:yellow;
+}
 </style>
 <body>
   <div ng-app="myApp" ng-controller="myCtrl">
+    <div>
+      <span ng-class="{
+        'color: blue': TICK_COLOR  == 'blue',
+        'color: yellow': TICK_COLOR === 'yellow'}"> ******************************************** </span>
+    </div>
     <div>
       <span ng-class="{
         'color: red': ETH_COLOR === 'red',
@@ -90,6 +101,8 @@
       $scope.LTC_COLOR = 'white';
 
       var REFRESH = 500;
+      var REFRESH_TICK = false;
+      $scope.TICK_COLOR = 'blue';
 
       var tickerETH = function() {
         var socket = io.connect(URI_SOCKET);
@@ -149,6 +162,9 @@
       tickerETH();
       tickerLTC();
       setInterval(function() {
+        //console.log()
+        REFRESH_TICK = !REFRESH_TICK;
+        $scope.TICK_COLOR = (REFRESH_TICK)?'yellow':'blue';
         $scope.$apply();
     }, REFRESH);
   });
