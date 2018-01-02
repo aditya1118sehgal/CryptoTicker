@@ -39,6 +39,21 @@ var getPriceETH = function(socket, ticker) {
 };
 
 /**
+ * gets VTC price
+ * @param socket
+ * @param ticker
+ */
+var getPriceVTC = function(socket, ticker) {
+  var price;
+  var url = endpoints.URI_VTC;
+  getPrice(url, function(price) {
+    //logMagenta('got eth price = ['+price+'], emitting');
+    socket.emit(ticker, price);
+  });
+};
+
+
+/**
  * gets LTC price
  * @param socket
  * @param ticker
@@ -109,6 +124,25 @@ var tickETH = function(socket, ticker) {
 }
 
 /**
+ * ticker ETH
+ * @param socket
+ * @param ticker
+ */
+var tickVTC = function(socket, ticker) {
+    logBlue('VTC ticking...');
+
+    getPriceVTC(socket, ticker);
+    var timer = setInterval(function() {
+        getPriceVTC(socket, ticker);
+    }, TICK_FREQUENCY);
+
+    socket.on('disconnect', function () {
+        clearInterval(timer);
+    });
+}
+
+
+/**
  * ticker LTC
  * @param socket
  * @param ticker
@@ -153,6 +187,11 @@ io.sockets.on('connection', function(socket) {
     socket.on('tickerLTC', function(ticker) {
       //logYellow('LTC socket on');
       tickLTC(socket, ticker);
+    });
+
+    socket.on('tickerVTC', function(ticker) {
+      logYellow('LTC socket on');
+      tickVTC(socket, ticker);
     });
 });
 

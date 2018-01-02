@@ -35,6 +35,11 @@
     </div>
     <div>
       <span ng-class="{
+        'color: red': VTC_COLOR === 'red',
+        'color: green': VTC_COLOR === 'green'}">$ {{VTC_PRICE}} / VTC</span>
+    </div>
+    <div>
+      <span ng-class="{
         'color: red': LTC_COLOR === 'red',
         'color: green': LTC_COLOR === 'green'}">$ {{LTC_PRICE}} / LTC</span>
     </div>
@@ -52,18 +57,23 @@
           'color: red': LTC_COLOR === 'red',
           'color: green': LTC_COLOR === 'green'}"> @ $ {{ ETH_PRICE }} / ETH = $ {{ ETH_VAL }}</span>
       </div>
+      <div>
+        {{ VTC }} VTC @ $ <span ng-class="{
+          'color: red': VTC_COLOR === 'red',
+          'color: green': VTC_COLOR === 'green'}"> @ $ {{ VTC_PRICE }} / VTC = $ {{ VTC_VAL }}</span>
+      </div>
     </div>
     <div>
-      WORTH = $ <span ng-class="{'color: green':true}">{{LTC_VAL + ETH_VAL}}</span><br>
+      WORTH = $ <span ng-class="{'color: green':true}">{{LTC_VAL + ETH_VAL+VTC_VAL}}</span><br>
       INV = $ <span ng-class="{'color: red':true}"> {{ INV }} </span><br>
-      FEE = $ <span ng-class="{'color: red':true}"> {{ FEE }} </span><br>
-      PROFIT = $ <span ng-class="{'color: red':LTC_VAL + ETH_VAL < INV, 'color: green': LTC_VAL + ETH_VAL > INV}"> {{ LTC_VAL + ETH_VAL - INV - FEE}}
+      PROFIT = $ <span ng-class="{'color: red':LTC_VAL + ETH_VAL < INV, 'color: green': LTC_VAL + ETH_VAL > INV}"> {{ LTC_VAL + ETH_VAL + VTC_VAL - INV}}
     </div>
     <div>
       <button ng-click="showDiv = !showDiv">input </button>
       <div ng-show="showDiv" >
       LTC: <input type="number" ng-model="LTC"><br>
       ETH: <input type="number" ng-model="ETH"><br>
+      VTC: <input type="number" ng-model="VTC"><br>
       INVESTED: <input type="number" ng-model="INV"><br>
         </div>
     </div>
@@ -78,10 +88,10 @@
       //CONFIG
 
       //DEV
-      $scope.LTC = 22.33;
-      $scope.ETH = 4.3;
-      $scope.FEE = 300;
-      $scope.INV = 3000;
+      $scope.VTC = 40.0;
+      $scope.LTC = 25.4;
+      $scope.ETH = 5.04;
+      $scope.INV = 5300;
       var URI_SOCKET = URI_DEV;
       //end DEV
 
@@ -91,18 +101,47 @@
       //$scope.INV = 0;
       //var URI_SOCKET = URI_PROD;
       //end PROD
-
+      $scope.VTC_PRICE = 8;
       $scope.LTC_PRICE = 90;
       $scope.ETH_PRICE = 470;
       $scope.showDiv = false;
       $scope.LTC_VAL = 0;
       $scope.ETH_VAL = 0;
+      $scope.VTC_VAL = 0;
       $scope.ETH_COLOR = 'white';
       $scope.LTC_COLOR = 'white';
 
       var REFRESH = 500;
       var REFRESH_TICK = false;
       $scope.TICK_COLOR = 'blue';
+
+      var tickerVTC = function() {
+        var socket = io.connect(URI_SOCKET);
+        var ticker = location.hash.substr(1);
+        socket.emit('tickerVTC', ticker);
+        socket.on(ticker, function(response) {
+          if(!isNaN(response)) {
+            if(response != $scope.VTC_PRICE) {
+              console.log('updating VTC price');
+              if(response > $scope.VTC_PRICE) {
+                $scope.VTC_COLOR = 'green';
+              }
+              else {
+                $scope.VTC_COLOR = 'red';
+              }
+              $scope.VTC_PRICE = response;
+            }
+            else {
+              $scope.VTC_COLOR = 'yellow';
+            }
+            $scope.VTC_VAL = $scope.VTC_PRICE * $scope.VTC;
+          }
+          else {
+            console.log('got NaN in ETH price ', response);
+          }
+        });
+      };
+
 
       var tickerETH = function() {
         var socket = io.connect(URI_SOCKET);
@@ -161,6 +200,7 @@
 
       tickerETH();
       tickerLTC();
+      tickerVTC();
       setInterval(function() {
         //console.log()
         REFRESH_TICK = !REFRESH_TICK;
